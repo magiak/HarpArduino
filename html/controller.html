@@ -1,0 +1,137 @@
+<html>
+	<body>
+    <div>
+        <button type="button"  id="connect" class="btn btn-danger col-md-12" onclick="onReadButtonClick()">CONNECT (18:93:D7:4B:75:F4)</button>
+    </div>
+
+    <div class="mt10">
+        <button type="button"  class="btn btn-primary" onclick="onWriteButtonClick(1)">Harfa</button>
+    </div>
+
+    <div class="mt10">
+        <button type="button" class="btn btn-secondary" onclick="onWriteButtonClick(2)">Knight Rider</button>
+        <button type="button" class="btn btn-secondary" onclick="onWriteButtonClick(3)">Red White</button>
+    </div>
+
+    <div class="mt10">
+        <button type="button"  class="btn btn-info" onclick="onWriteButtonClick(4)" style="background-color: rebeccapurple;">Play Melody</button>
+        <button type="button"  class="btn btn-info" onclick="onWriteButtonClick(5)" style="background-color: mediumseagreen;">Play Tones</button>
+    </div>
+
+    <div class="mt10">
+      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(6)">Star Wars</button>
+      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(14)">Pirates</button>
+      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(15)">Crazy Frog</button>
+      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(16)">Mario UW</button>
+      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(17)">Titanic</button>
+    </div>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <script>
+      document.addEventListener('keydown', (event) => {
+        const keyName = event.key;
+      
+        if (keyName === 'Control') {
+          // do not alert when only Control key is pressed.
+          return;
+        }
+      
+        switch(keyName){
+          case 'h': 
+            onWriteButtonClick(1);
+            break;
+          case 'k': 
+            onWriteButtonClick(2);
+            break;
+          case 'r': 
+            onWriteButtonClick(3);
+            break;
+          // TODO
+          case 'z': 
+            onWriteButtonClick(7);
+            break;
+          case 'x': 
+            onWriteButtonClick(8);
+            break;
+          case 'c': 
+            onWriteButtonClick(9);
+            break;
+          case 'v': 
+            onWriteButtonClick(10);
+            break;
+          case 'b': 
+            onWriteButtonClick(11);
+            break;
+          case 'n': 
+            onWriteButtonClick(12);
+            break;
+          case 'm': 
+            onWriteButtonClick(13);
+            break;
+        }
+      
+      }, false);
+      
+      var customCharacteristic;
+      
+      function onReadButtonClick() {
+        console.log('Requesting Bluetooth Device...');
+        navigator.bluetooth.requestDevice({
+        // filters: [...] <- Prefer filters to save energy & show relevant devices.
+            acceptAllDevices: true,
+            optionalServices: ['0000FFE0-0000-1000-8000-00805F9B34FB'.toLowerCase()]})
+        .then(device => {
+          console.log('Connecting to GATT Server...');
+          return device.gatt.connect();
+        })
+        .then(server => {
+          console.log('Getting Service...');
+          return server.getPrimaryService("0000FFE0-0000-1000-8000-00805F9B34FB".toLowerCase()); 
+        })
+        .then(service => {
+          console.log('Getting CUSTOM CHARACTERISTIC. READ/WRITE/NOTIFY');
+          return service.getCharacteristic("0000FFE1-0000-1000-8000-00805F9B34FB".toLowerCase());
+        })
+        .then(characteristic => {
+          // Save characteristic
+          customCharacteristic = characteristic;
+          var button = document.getElementById("connect");
+          button.innerHTML = "Connected"
+          button.classList.add('btn-success');
+          button.classList.remove('btn-danger');
+        })
+        .catch(error => {
+          console.log('Argh! ' + error);
+        });
+      }
+      
+      function onWriteButtonClick(module) {
+        if (!customCharacteristic) {
+          return;
+        }
+      
+        let value = Uint8Array.of(module);
+        console.log(value);
+        customCharacteristic.writeValue(value)
+        .then(_ => {
+          console.log('DONE');
+        })
+        .catch(error => {
+          console.log('Argh! ' + error);
+        });
+      }
+    </script>
+    
+    <style>
+      body {
+        background-color: black;
+      }
+    
+      .mt10 {
+        margin-top: 10px;
+      }
+    </style>
+	</body>
+</html>
