@@ -19,6 +19,10 @@ enum Chord {
 void playTones();
 void playTone(int note);
 void playTone(int note, int noteDuration);
+void playToneAndLightUpLed(int note, int noteDuration);
+
+int mapToneToLed(int note);
+
 void playAllTones();
 void playDurChord(Chord chord);
 void playAllDurChords();

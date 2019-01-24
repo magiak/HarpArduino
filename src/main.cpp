@@ -18,7 +18,7 @@ const int LASER3_NOTE = NOTE_E4;
 const int LASER4_NOTE = NOTE_F4;
 const int LASER5_NOTE = NOTE_G4;
 const int LASER6_NOTE = NOTE_A4;
-const int LASER7_NOTE = NOTE_B4; // nechapu kde je H :D
+const int LASER7_NOTE = NOTE_B4;
 
 int laserValA0 = 1023;
 int laserValA1 = 1023;
@@ -30,10 +30,39 @@ int laserValA6 = 1023;
 
 int bleValue = 1; // default function
 
+void setUpPins();
+void switchModules();
 void readLasers();
 void turnTheLedOnIfTheLaserIsInterrupted();
 
 void setup() {
+  setUpPins();
+
+  Serial.begin(9600);
+  mySerial.begin(9600);
+
+  sendCommand("AT");
+  sendCommand("AT+ROLE0");
+  sendCommand("AT+UUID0xFFE0");
+  sendCommand("AT+CHAR0xFFE1");
+  sendCommand("AT+NAMEHarfa");
+
+  playTone(NOTE_C4);
+  playTone(NOTE_E4);
+  playTone(NOTE_G4);
+}
+
+void loop() {
+  int result = readBLE();
+  if(result != -1){
+    bleValue = result;
+    Serial.println(bleValue);
+  }
+
+  switchModules();
+}
+
+void setupPins(){
   // put your setup code here, to run once:
   pinMode(LED_D2, OUTPUT);
   pinMode(LED_D3, OUTPUT);  
@@ -52,35 +81,9 @@ void setup() {
   pinMode(LASER_A6, INPUT);
 
   pinMode(REPRO_D11, OUTPUT);
-
-  Serial.begin(9600);
-  
-  mySerial.begin(9600);
-
-  sendCommand("AT");
-  sendCommand("AT+ROLE0");
-  sendCommand("AT+UUID0xFFE0");
-  sendCommand("AT+CHAR0xFFE1");
-  sendCommand("AT+NAMEHarfa");
-
-  // playTone(NOTE_C4);
-  // playTone(NOTE_E4);
-  // playTone(NOTE_G4);
-
-  // playAllTones();
-  // playAllDurChords();
 }
 
-void loop() {
-  int result = readBLE();
-  if(result != -1){
-    bleValue = result;
-    Serial.println(bleValue);
-  }
-
-  // Serial.println(bleValue);
-
-  // Serial.println(bleValue);
+void switchModules(){
   switch(bleValue){
     case 0:
       // do nothing :)
@@ -90,10 +93,10 @@ void loop() {
       turnTheLedOnIfTheLaserIsInterrupted();
       break;
     case 2:
-      knightRider();
+      knightRiderLeds();
       break;
     case 3:
-      redWhite();
+      redWhiteLeds();
       break;
     case 4:
       playMelody();
@@ -106,31 +109,31 @@ void loop() {
       starWars();
       break;
     case 7:
-      turnOnAndOff(LED_D2);
+      turnLedOnAndOff(LED_D2);
       bleValue = 0;
       break;
     case 8:
-      turnOnAndOff(LED_D3);
+      turnLedOnAndOff(LED_D3);
       bleValue = 0;
       break;
     case 9:
-      turnOnAndOff(LED_D4);
+      turnLedOnAndOff(LED_D4);
       bleValue = 0;
       break;
     case 10:
-      turnOnAndOff(LED_D5);
+      turnLedOnAndOff(LED_D5);
       bleValue = 0;
       break;
     case 11:
-      turnOnAndOff(LED_D6);
+      turnLedOnAndOff(LED_D6);
       bleValue = 0;
       break;
     case 12:
-      turnOnAndOff(LED_D7);
+      turnLedOnAndOff(LED_D7);
       bleValue = 0;
       break;
     case 13:
-      turnOnAndOff(LED_D8);
+      turnLedOnAndOff(LED_D8);
       bleValue = 0;
       break;
     case 14:
@@ -147,6 +150,10 @@ void loop() {
       break;
     case 17:
       playTitanic();
+      bleValue = 0;
+      break;
+    case 18:
+      kockaLezeDirou();
       bleValue = 0;
       break;
   }

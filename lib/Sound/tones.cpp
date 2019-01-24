@@ -23,11 +23,42 @@ void playTones(){
 
 void playTone(int note){
   int noteDuration = 1000/8;
-  // tone(REPRO_D11, note, noteDuration);
+  tone(REPRO_D11, note, noteDuration);
 }
 
 void playTone(int note, int noteDuration){
-  // tone(REPRO_D11, note, noteDuration);
+  tone(REPRO_D11, note, noteDuration);
+  delay(noteDuration * 1.05);
+}
+
+void playToneAndLightUpLed(int note, int noteDuration){
+  int ledPin = mapToneToLed(note);
+  digitalWrite(ledPin, HIGH);
+  tone(REPRO_D11, note, noteDuration);
+  delay(noteDuration * 0.9);
+  digitalWrite(ledPin, LOW);
+  delay(noteDuration * 0.15);
+}
+
+int mapToneToLed(int note){
+  switch(note){
+    case NOTE_C4:
+      return LED_D2;
+    case NOTE_D4:
+      return LED_D3;
+    case NOTE_E4: 
+      return LED_D4;
+    case NOTE_F4: 
+      return LED_D5;
+    case NOTE_G4: 
+      return LED_D6;
+    case NOTE_A4: 
+      return LED_D7;
+    case NOTE_B4: 
+      return LED_D8;
+  }
+
+  return -1;
 }
 
 void playAllTones(){
