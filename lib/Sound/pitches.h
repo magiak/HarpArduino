@@ -58,7 +58,7 @@
 #define NOTE_F5  698
 #define NOTE_FS5 740
 #define NOTE_G5  784
-#define NOTE_GS5 831
+#define NOTE_GS5 831 // nebo 830?
 #define NOTE_A5  880
 #define NOTE_AS5 932
 #define NOTE_B5  988

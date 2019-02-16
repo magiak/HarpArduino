@@ -1,7 +1,13 @@
-#include <arduino.h>
+// NOTE_XY
+// X = ton (tonu je 12 = 7 + 5) // https://dusan.pc-slany.cz/hudba/tony.htm
+// Y = oktava (po 12 tonech zacina znovu stejna oktava)
+// Chromaticky (půltonový) kruh => C C# D D# E F F# G G# A B H
+// Kvartovy kruh (příbuznost tónů - posun o 5půltonů)  => C G D A E H F# C# G# D# B# F# =>
+
 #include "tones.h"
-#include "pins.h"
-#include "pitches.h"
+
+extern bool turnOnLeds;
+bool playToneFromRepro = false;
 
 void playTones(){
   int noteDuration = 1000/4;
@@ -23,36 +29,99 @@ void playTones(){
 
 void playTone(int note){
   int noteDuration = 1000/8;
-  tone(REPRO_D11, note, noteDuration);
+  if(playToneFromRepro){
+    tone(REPRO_D11, note, noteDuration);
+  }else{
+    String str_note = mapToneToString(note);
+    String str_duration = String(" 8 ");
+  
+    writeBLE(str_note + str_duration);
+  }
 }
 
 void playTone(int note, int noteDuration){
-  tone(REPRO_D11, note, noteDuration);
-  delay(noteDuration * 1.05);
+  if(turnOnLeds){
+    int ledPin = mapToneToLed(note);
+    digitalWrite(ledPin, HIGH);
+    if(playToneFromRepro){
+      tone(REPRO_D11, note, noteDuration);
+    }else{
+      String str_note = mapToneToString(note);
+      String str_duration = String(" 8 ");
+   
+      writeBLE(str_note + str_duration);
+    }
+
+    delay(noteDuration * 0.8);
+    digitalWrite(ledPin, LOW);
+    delay(noteDuration * 0.25);
+  }
+  else{
+    if(playToneFromRepro){
+      tone(REPRO_D11, note, noteDuration);
+    }else{
+      String str_note = mapToneToString(note);
+      String str_duration = String(" 8 ");
+   
+      writeBLE(str_note + str_duration);
+    }
+
+    delay(noteDuration * 1.05);
+  }
 }
 
-void playToneAndLightUpLed(int note, int noteDuration){
-  int ledPin = mapToneToLed(note);
-  digitalWrite(ledPin, HIGH);
-  tone(REPRO_D11, note, noteDuration);
-  delay(noteDuration * 0.9);
-  digitalWrite(ledPin, LOW);
-  delay(noteDuration * 0.15);
+String mapToneToString(int note){
+  switch(note){
+    case NOTE_F4:
+      return "F 4";
+    case NOTE_GS4:
+      return "G# 4";
+    case NOTE_A4: 
+      return "A 4";
+    case NOTE_C5: 
+      return "C 5";
+    case NOTE_E5: 
+      return "E 5";
+    case NOTE_F5: 
+      return "F 5";
+    case NOTE_B4: 
+      return "B 4";
+  }
+
+  return "";
 }
 
 int mapToneToLed(int note){
+  // switch(note){
+  //   case NOTE_C4:
+  //     return LED_D2;
+  //   case NOTE_D4:
+  //     return LED_D3;
+  //   case NOTE_E4: 
+  //     return LED_D4;
+  //   case NOTE_F4: 
+  //     return LED_D5;
+  //   case NOTE_G4: 
+  //     return LED_D6;
+  //   case NOTE_A4: 
+  //     return LED_D7;
+  //   case NOTE_B4: 
+  //     return LED_D8;
+  // }
+
+  // Star wars
   switch(note){
-    case NOTE_C4:
+    case NOTE_F4:
       return LED_D2;
-    case NOTE_D4:
+    case NOTE_GS4:
       return LED_D3;
-    case NOTE_E4: 
-      return LED_D4;
-    case NOTE_F4: 
-      return LED_D5;
-    case NOTE_G4: 
-      return LED_D6;
     case NOTE_A4: 
+      return LED_D4;
+    case NOTE_C5: 
+      return LED_D5;
+    case NOTE_E5: 
+      return LED_D6;
+    case NOTE_F5: 
       return LED_D7;
     case NOTE_B4: 
       return LED_D8;
@@ -245,20 +314,20 @@ void playAllTones(){
   playTone(NOTE_DS8);
 }
 
-// Durové akordy
-// Cdur	C	E	G
-// C#dur	C#	F	G#
-// Ddur	D	F#	A
-// D#dur	D#	G	B
-// Edur	E	G#	H
-// Fdur	F	A	C
-// F#dur	F#	B	C#
-// Gdur	G	H	D
-// G#dur	G#	C	D#
-// Adur	A	C#	E
-// Bdur	B	D	F
-// Hdur	H	D#	F#
 void playDurChord(Chord chord){
+  // Durové akordy
+  // Cdur	C	E	G
+  // C#dur	C#	F	G#
+  // Ddur	D	F#	A
+  // D#dur	D#	G	B
+  // Edur	E	G#	H
+  // Fdur	F	A	C
+  // F#dur	F#	B	C#
+  // Gdur	G	H	D
+  // G#dur	G#	C	D#
+  // Adur	A	C#	E
+  // Bdur	B	D	F
+  // Hdur	H	D#	F#
   switch(chord)
   {
       case Cdur:

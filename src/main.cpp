@@ -1,42 +1,16 @@
 #include "main.h"
 
-extern SoftwareSerial mySerial;
+const int DEFAULT_MODULE = 1;
+int selectedModule = DEFAULT_MODULE; // default function
+int loopCount = 1;
 
-// Hodnota je priblizne 30 pokud paprsek neni preruseny
-// Pokud je preruseny tak je priblizne 750
-const int LASER_MAX_NOT_INTERRUPTED = 400;
-
-// NOTE_XY
-// X = ton (tonu je 12 = 7 + 5) // https://dusan.pc-slany.cz/hudba/tony.htm
-// Y = oktava (po 12 tonech zacina znovu stejna oktava)
-// Chromaticky (půltonový) kruh => C C# D D# E F F# G G# A B H
-// Kvartovy kruh (příbuznost tónů - posun o 5půltonů)  => C G D A E H F# C# G# D# B# F# =>
-
-const int LASER1_NOTE = NOTE_C4;
-const int LASER2_NOTE = NOTE_D4;
-const int LASER3_NOTE = NOTE_E4;
-const int LASER4_NOTE = NOTE_F4;
-const int LASER5_NOTE = NOTE_G4;
-const int LASER6_NOTE = NOTE_A4;
-const int LASER7_NOTE = NOTE_B4;
-
-int laserValA0 = 1023;
-int laserValA1 = 1023;
-int laserValA2 = 1023;
-int laserValA3 = 1023;
-int laserValA4 = 1023;
-int laserValA5 = 1023;
-int laserValA6 = 1023;
-
-int bleValue = 1; // default function
-
-void setUpPins();
+void setupPins();
 void switchModules();
 void readLasers();
 void turnTheLedOnIfTheLaserIsInterrupted();
 
 void setup() {
-  setUpPins();
+  setupPins();
 
   Serial.begin(9600);
   mySerial.begin(9600);
@@ -46,17 +20,13 @@ void setup() {
   sendCommand("AT+UUID0xFFE0");
   sendCommand("AT+CHAR0xFFE1");
   sendCommand("AT+NAMEHarfa");
-
-  playTone(NOTE_C4);
-  playTone(NOTE_E4);
-  playTone(NOTE_G4);
 }
 
 void loop() {
   int result = readBLE();
   if(result != -1){
-    bleValue = result;
-    Serial.println(bleValue);
+    selectedModule = result;
+    Serial.println(selectedModule);
   }
 
   switchModules();
@@ -84,7 +54,7 @@ void setupPins(){
 }
 
 void switchModules(){
-  switch(bleValue){
+  switch(selectedModule){
     case 0:
       // do nothing :)
       break;
@@ -100,61 +70,80 @@ void switchModules(){
       break;
     case 4:
       playMelody();
+      selectedModule = DEFAULT_MODULE;
       break;
     case 5:
-      // playTones();
       playAllTones();
+      selectedModule = DEFAULT_MODULE;
       break;
     case 6:
+      LASER1_NOTE = NOTE_F4;
+      LASER2_NOTE = NOTE_GS4;
+      LASER3_NOTE = NOTE_A4;
+      LASER4_NOTE = NOTE_C5;
+      LASER5_NOTE = NOTE_E5;
+      LASER6_NOTE = NOTE_F5;
+      LASER7_NOTE = NOTE_B4;
       starWars();
+
+      selectedModule = DEFAULT_MODULE;
       break;
     case 7:
       turnLedOnAndOff(LED_D2);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 8:
       turnLedOnAndOff(LED_D3);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 9:
       turnLedOnAndOff(LED_D4);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 10:
       turnLedOnAndOff(LED_D5);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 11:
       turnLedOnAndOff(LED_D6);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 12:
       turnLedOnAndOff(LED_D7);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 13:
       turnLedOnAndOff(LED_D8);
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 14:
       playPirates();
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 15:
       playCrazyFrog();
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 16:
       playMarioUW();
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 17:
       playTitanic();
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
       break;
     case 18:
+      LASER1_NOTE = NOTE_C4;
+      LASER2_NOTE = NOTE_D4;
+      LASER3_NOTE = NOTE_E4;
+      LASER4_NOTE = NOTE_F4;
+      LASER5_NOTE = NOTE_G4;
+      LASER6_NOTE = NOTE_A4;
+      LASER7_NOTE = NOTE_B4;
+
       kockaLezeDirou();
-      bleValue = 0;
+      selectedModule = DEFAULT_MODULE;
+
       break;
   }
 }
@@ -178,7 +167,7 @@ void turnTheLedOnIfTheLaserIsInterrupted() {
     digitalWrite(LED_D4, LOW);
   }else{
     digitalWrite(LED_D4, HIGH);
-    // playTone(LASER3_NOTE); // nesviti led :(
+    playTone(LASER3_NOTE);
   }
 
   if(laserValA3 < LASER_MAX_NOT_INTERRUPTED){
@@ -211,7 +200,7 @@ void turnTheLedOnIfTheLaserIsInterrupted() {
 }
 
 void readLasers() {
-   // Analog Values 0 to 1023
+  // Analog Values 0 to 1023
   laserValA0 = analogRead(LASER_A0);
   laserValA1 = analogRead(LASER_A1);
   laserValA2 = analogRead(LASER_A2);

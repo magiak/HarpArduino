@@ -137,111 +137,91 @@ void play(int note[], int duration[], int songSize, float pauseCoefficient){
   }
 }
 
-// Star wars :D ale nefunguje to teda uplne :D
-// https://gist.github.com/nicksort/4736535
-const int c = 261;
-const int d = 294;
-const int e = 329;
-const int f = 349;
-const int g = 391;
-const int gS = 415;
-const int a = 440;
-const int aS = 455;
-const int b = 466;
-const int cH = 523;
-const int cSH = 554;
-const int dH = 587;
-const int dSH = 622;
-const int eH = 659;
-const int fH = 698;
-const int fSH = 740;
-const int gH = 784;
-const int gSH = 830;
-const int aH = 880;
+const int aS = 455; // Nemam nahradu v NOTE :(
 
 void starWars(){
   //Play first section
   firstSection();
  
   //Play second section
-  secondSection();
+  // secondSection();
  
-  //Variant 1
-  playTone(f, 250);  
-  playTone(gS, 500);  
-  playTone(f, 350);  
-  playTone(a, 125);
-  playTone(cH, 500);
-  playTone(a, 375);  
-  playTone(cH, 125);
-  playTone(eH, 650);
+  // //Variant 1
+  // playTone(NOTE_F4, 250);  
+  // playTone(NOTE_GS4, 500);  
+  // playTone(NOTE_F4, 350);  
+  // playTone(NOTE_A4, 125);
+  // playTone(NOTE_C5, 500);
+  // playTone(NOTE_A4, 375);  
+  // playTone(NOTE_C5, 125);
+  // playTone(NOTE_E5, 650);
  
-  delay(500);
+  // delay(500);
  
-  //Repeat second section
-  secondSection();
+  // //Repeat second section
+  // secondSection();
  
-  //Variant 2
-  playTone(f, 250);  
-  playTone(gS, 500);  
-  playTone(f, 375);  
-  playTone(cH, 125);
-  playTone(a, 500);  
-  playTone(f, 375);  
-  playTone(cH, 125);
-  playTone(a, 650);  
+  // //Variant 2
+  // playTone(NOTE_F4, 250);  
+  // playTone(NOTE_GS4, 500);  
+  // playTone(NOTE_F4, 375);  
+  // playTone(NOTE_C5, 125);
+  // playTone(NOTE_A4, 500);  
+  // playTone(NOTE_F4, 375);  
+  // playTone(NOTE_C5, 125);
+  // playTone(NOTE_A4, 650);  
  
-  delay(650);
+  // delay(650);
 }
 
 void firstSection()
 {
-  playTone(a, 500);
-  playTone(a, 500);    
-  playTone(a, 500);
-  playTone(f, 350);
-  playTone(cH, 150);  
-  playTone(a, 500);
-  playTone(f, 350);
-  playTone(cH, 150);
-  playTone(a, 650);
+  playTone(NOTE_A4, 500);
+  playTone(NOTE_A4, 500);    
+  playTone(NOTE_A4, 500);
+  playTone(NOTE_F4, 350);
+  playTone(NOTE_C5, 150);  
+  playTone(NOTE_A4, 500);
+  playTone(NOTE_F4, 350);
+  playTone(NOTE_C5, 150);
+  playTone(NOTE_A4, 650);
  
   delay(500);
  
-  playTone(eH, 500);
-  playTone(eH, 500);
-  playTone(eH, 500);  
-  playTone(fH, 350);
-  playTone(cH, 150);
-  playTone(gS, 500);
-  playTone(f, 350);
-  playTone(cH, 150);
-  playTone(a, 650);
+  playTone(NOTE_E5, 500);
+  playTone(NOTE_E5, 500);
+  playTone(NOTE_E5, 500);  
+  playTone(NOTE_F5, 350);
+  playTone(NOTE_C5, 150);
+  playTone(NOTE_GS4, 500);
+  playTone(NOTE_F4, 350);
+  playTone(NOTE_C5, 150);
+  playTone(NOTE_A4, 650);
  
   delay(500);
 }
  
 void secondSection()
 {
-  playTone(aH, 500);
-  playTone(a, 300);
-  playTone(a, 150);
-  playTone(aH, 500);
-  playTone(gSH, 325);
-  playTone(gH, 175);
-  playTone(fSH, 125);
-  playTone(fH, 125);    
-  playTone(fSH, 250);
+  playTone(NOTE_A5, 500);
+  playTone(NOTE_A4, 300);
+  playTone(NOTE_A4, 150);
+  playTone(NOTE_A5, 500);
+  playTone(NOTE_GS5, 325);
+  playTone(NOTE_G5, 175);
+  playTone(NOTE_FS5, 125);
+  playTone(NOTE_F5, 125);    
+  playTone(NOTE_FS5, 250);
  
   delay(325);
  
   playTone(aS, 250);
-  playTone(dSH, 500);
-  playTone(dH, 325);  
-  playTone(cSH, 175);  
-  playTone(cH, 125);  
-  playTone(b, 125);  
-  playTone(cH, 250);  
+  playTone(NOTE_DS5, 500);
+  playTone(NOTE_D5, 325);  
+  playTone(NOTE_CS5, 175);  
+  playTone(NOTE_C5, 125);  
+  playTone(NOTE_AS4, 125);  
+  playTone(NOTE_C5, 250);  
  
   delay(350);
 }

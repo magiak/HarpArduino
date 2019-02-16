@@ -1,34 +1,44 @@
 <html>
 	<body>
     <div>
-        <button type="button"  id="connect" class="btn btn-danger col-md-12" onclick="onReadButtonClick()">CONNECT (18:93:D7:4B:75:F4)</button>
+        <button type="button" id="connect" class="btn btn-danger col-md-12" onclick="onReadButtonClick()">CONNECT (18:93:D7:4B:75:F4)</button>
     </div>
 
     <div class="mt10">
-        <button type="button"  class="btn btn-primary" onclick="onWriteButtonClick(1)">Harfa</button>
+        <button type="button" class="btn btn-primary col-sm-6 col-md-3" onclick="onWriteButtonClick(1)">Harfa</button>
     </div>
 
     <div class="mt10">
-        <button type="button" class="btn btn-secondary" onclick="onWriteButtonClick(2)">Knight Rider</button>
-        <button type="button" class="btn btn-secondary" onclick="onWriteButtonClick(3)">Red White</button>
+        <button type="button" class="btn btn-secondary col-sm-6 col-md-3" onclick="onWriteButtonClick(2)">Knight Rider</button>
+        <button type="button" class="btn btn-secondary col-sm-6 col-md-3" onclick="onWriteButtonClick(3)">Red White</button>
     </div>
 
     <div class="mt10">
-        <button type="button"  class="btn btn-info" onclick="onWriteButtonClick(4)" style="background-color: rebeccapurple;">Play Melody</button>
-        <button type="button"  class="btn btn-info" onclick="onWriteButtonClick(5)" style="background-color: mediumseagreen;">Play Tones</button>
+        <button type="button"  class="btn btn-info col-sm-6 col-md-3" onclick="onWriteButtonClick(4)" style="background-color: rebeccapurple;">Play Melody</button>
+        <button type="button"  class="btn btn-info col-sm-6 col-md-3" onclick="onWriteButtonClick(5)" style="background-color: mediumseagreen;">Play Tones</button>
     </div>
 
     <div class="mt10">
-      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(6)">Star Wars</button>
-      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(14)">Pirates</button>
-      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(15)">Crazy Frog</button>
-      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(16)">Mario UW</button>
-      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(17)">Titanic</button>
-      <button type="button"  class="btn btn-light" onclick="onWriteButtonClick(18)">Kocka leze dirou</button>
+      <button type="button"  class="btn btn-light col-sm-6 col-md-3" onclick="onWriteButtonClick(6)">Star Wars</button>
+      <button type="button"  class="btn btn-light col-sm-6 col-md-3" onclick="onWriteButtonClick(14)">Pirates</button>
+      <button type="button"  class="btn btn-light col-sm-6 col-md-3" onclick="onWriteButtonClick(15)">Crazy Frog</button>
+      <button type="button"  class="btn btn-light col-sm-6 col-md-3" onclick="onWriteButtonClick(16)">Mario UW</button>
+      <button type="button"  class="btn btn-light col-sm-6 col-md-3" onclick="onWriteButtonClick(17)">Titanic</button>
+      <button type="button"  class="btn btn-light col-sm-6 col-md-3" onclick="onWriteButtonClick(18)">Kocka leze dirou</button>
     </div>
     
+    <!-- <button type="button" onclick="testTone()">TEST TONE</button> -->
+
+    <!-- <div style="width: 100px; height: 100px">
+      <tone-demo autoplay></tone-demo>
+    </div> -->
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2/webcomponents-bundle.js"></script>
+    <script src="https://unpkg.com/tone"></script>
+    <script src="https://unpkg.com/@tonejs/ui"></script>
 
     <script>
       document.addEventListener('keydown', (event) => {
@@ -84,6 +94,9 @@
             acceptAllDevices: true,
             optionalServices: ['0000FFE0-0000-1000-8000-00805F9B34FB'.toLowerCase()]})
         .then(device => {
+          // Set up event listener for when device gets disconnected.
+          device.addEventListener('gattserverdisconnected', onDisconnected);
+
           console.log('Connecting to GATT Server...');
           return device.gatt.connect();
         })
@@ -98,6 +111,10 @@
         .then(characteristic => {
           // Save characteristic
           customCharacteristic = characteristic;
+
+          customCharacteristic.startNotifications();
+          customCharacteristic.addEventListener('characteristicvaluechanged', characteristicValueChanged);
+
           var button = document.getElementById("connect");
           button.innerHTML = "Connected"
           button.classList.add('btn-success');
@@ -123,6 +140,50 @@
           console.log('Argh! ' + error);
         });
       }
+    
+      function onDisconnected(event) {
+        // let device = event.target;
+        // alert('Device ' + device.name + ' is disconnected.');
+
+        var button = document.getElementById("connect");
+        button.innerHTML = "CONNECT (18:93:D7:4B:75:F4)"
+        button.classList.add('btn-danger');
+        button.classList.remove('btn-success');
+      }
+
+      function characteristicValueChanged(event){
+        let value = String.fromCharCode.apply(null, new Uint8Array(event.target.value.buffer));
+
+        if(value.startsWith("AT"))
+        {
+          return;
+        }
+
+        // 'C4 8'
+        // tone = 'C' octave = 4 duration = 8
+        var values = value.split(' ');
+        let tone = values[0];
+        let octave = values[1];
+        let duration = values[2];
+
+        playTone(tone, octave, duration);
+      }
+
+      function playTone(tone, octave, octave){
+        if(typeof tone === 'undefined'
+            || typeof octave === 'undefined'
+            || typeof octave === 'undefined')
+        {
+          return;
+        }
+
+        //create a synth and connect it to the master output (your speakers)
+        var synth = new Tone.Synth().toMaster();
+
+        //play a middle 'C' for the duration of an 8th note
+        synth.triggerAttackRelease(tone + octave, duration + 'n'); // EXAMPLE triggerAttackRelease('C4', '8n')
+      }
+
     </script>
     
     <style>

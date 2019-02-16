@@ -1,6 +1,12 @@
 #ifndef TONES_H
 #define TONES_H
 
+#include <arduino.h>
+#include "pins.h"
+#include "pitches.h"
+#include "bluetooth.h"
+#include <stdlib.h> 
+
 enum Chord {
   Cdur,
   CSdur, // C#
@@ -19,8 +25,8 @@ enum Chord {
 void playTones();
 void playTone(int note);
 void playTone(int note, int noteDuration);
-void playToneAndLightUpLed(int note, int noteDuration);
 
+String mapToneToString(int note);
 int mapToneToLed(int note);
 
 void playAllTones();

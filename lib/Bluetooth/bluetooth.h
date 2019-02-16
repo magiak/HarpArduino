@@ -6,6 +6,7 @@
 #include "pins.h"
 
 void sendCommand(const char * command);
+void writeBLE(String value);
 int readBLE();
 
 #endif

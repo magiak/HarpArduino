@@ -22,6 +22,10 @@ void sendCommand(const char * command) {
   delay(50);
 }
 
+void writeBLE(String value){
+  // mySerial.println(value);
+}
+
 int readBLE(){
   int bleValue = -1;
   if (mySerial.available()) {
