@@ -27,6 +27,7 @@ void playTones(){
   //delay(100);
 }
 
+// TODO Pouziva se pokud prerusim laser.. rozviceni LED se tedy resi tam..
 void playTone(int note){
   int noteDuration = 1000/8;
   if(playToneFromRepro){
@@ -36,6 +37,7 @@ void playTone(int note){
     String str_duration = String(" 8 ");
   
     writeBLE(str_note + str_duration);
+    // delay(noteDuration); // TODO :D
   }
 }
 

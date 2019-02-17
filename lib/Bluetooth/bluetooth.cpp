@@ -23,7 +23,7 @@ void sendCommand(const char * command) {
 }
 
 void writeBLE(String value){
-  // mySerial.println(value);
+  mySerial.println(value);
 }
 
 int readBLE(){

@@ -50,6 +50,7 @@ void setupPins(){
   pinMode(LASER_A5, INPUT);
   pinMode(LASER_A6, INPUT);
 
+  pinMode(BLE_STATE, INPUT);
   pinMode(REPRO_D11, OUTPUT);
 }
 
@@ -148,13 +149,10 @@ void switchModules(){
   }
 }
 
+
 void turnTheLedOnIfTheLaserIsInterrupted() {
-  if(laserValA6 < LASER_MAX_NOT_INTERRUPTED){
-    digitalWrite(LED_D2, LOW);
-  }else{
-    digitalWrite(LED_D2, HIGH);
-    playTone(LASER1_NOTE);
-  }
+  // LED_D2 is used for BLE status
+  showBLEStatus();
 
   if(laserValA5 < LASER_MAX_NOT_INTERRUPTED){
     digitalWrite(LED_D3, LOW);
@@ -210,4 +208,58 @@ void readLasers() {
   laserValA6 = analogRead(LASER_A6);
 
   delay(10);
+}
+
+// BLE BLINK :)
+bool firstLaserInterrupted = false;
+
+int ledState = LOW;             // ledState used to set the LED
+unsigned long previousMillis = 0;        // will store last time LED was updated
+const long interval = 500;           // interval at which to blink (milliseconds)
+
+unsigned long previousInterruptedMillis = 0; // last time the first laser was interrupted
+const long interruptedInterval = 5000; // again start blinking after 5s of inactivity
+
+void showBLEStatus(){
+  if(laserValA6 >= LASER_MAX_NOT_INTERRUPTED && !firstLaserInterrupted){
+    firstLaserInterrupted = true;
+  }
+
+  if(!firstLaserInterrupted){
+    int state = analogRead(BLE_STATE); // Don't know why i can't use digitalRead :(
+    if(state < 500){
+      unsigned long currentMillis = millis();
+      if (currentMillis - previousMillis >= interval) {
+        // save the last time you blinked the LED
+        previousMillis = currentMillis;
+
+        // if the LED is off turn it on and vice-versa:
+        if (ledState == LOW) {
+          ledState = HIGH;
+        } else {
+          ledState = LOW;
+        }
+
+        // set the LED with the ledState of the variable:
+        digitalWrite(LED_D2, ledState);
+      }
+    }else{
+      digitalWrite(LED_D2, LOW); // STOP BLINKING
+    }
+  }else{
+    // detect interrupted laser
+    if(laserValA6 < LASER_MAX_NOT_INTERRUPTED){
+      unsigned long currentMillis = millis();
+      // again start blinking after 5s of inactivity
+      if(currentMillis - previousInterruptedMillis >= interruptedInterval){
+        firstLaserInterrupted = false;
+      }
+
+      digitalWrite(LED_D2, LOW);
+    }else{
+      previousInterruptedMillis = millis(); // save the last time the laser was interrupted
+      digitalWrite(LED_D2, HIGH);
+      playTone(LASER1_NOTE);
+    }
+  }
 }

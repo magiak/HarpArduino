@@ -15,5 +15,6 @@ const int REPRO_D11 = 11;
 
 const int BLE_RXD = 12;
 const int BLE_TXD = 13;
+const int BLE_STATE = A7;
 
 #endif
