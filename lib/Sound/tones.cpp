@@ -7,7 +7,7 @@
 #include "tones.h"
 
 extern bool turnOnLeds;
-bool playToneFromRepro = false;
+extern bool playToneFromRepro;
 
 void playTones(){
   int noteDuration = 1000/4;

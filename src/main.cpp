@@ -3,11 +3,13 @@
 const int DEFAULT_MODULE = 1;
 int selectedModule = DEFAULT_MODULE; // default function
 int loopCount = 1;
+bool playToneFromRepro = false;
 
 void setupPins();
 void switchModules();
 void readLasers();
 void turnTheLedOnIfTheLaserIsInterrupted();
+void showBLEStatus();
 
 void setup() {
   setupPins();
@@ -149,7 +151,6 @@ void switchModules(){
   }
 }
 
-
 void turnTheLedOnIfTheLaserIsInterrupted() {
   // LED_D2 is used for BLE status
   showBLEStatus();
@@ -225,9 +226,12 @@ void showBLEStatus(){
     firstLaserInterrupted = true;
   }
 
+  int state = analogRead(BLE_STATE); // Don't know why i can't use digitalRead :(
+  playToneFromRepro = state < 500;
+
   if(!firstLaserInterrupted){
-    int state = analogRead(BLE_STATE); // Don't know why i can't use digitalRead :(
     if(state < 500){
+      // NOT CONNECTED
       unsigned long currentMillis = millis();
       if (currentMillis - previousMillis >= interval) {
         // save the last time you blinked the LED
@@ -244,7 +248,7 @@ void showBLEStatus(){
         digitalWrite(LED_D2, ledState);
       }
     }else{
-      digitalWrite(LED_D2, LOW); // STOP BLINKING
+      digitalWrite(LED_D2, LOW); // CONNECTED STOP BLINKING
     }
   }else{
     // detect interrupted laser

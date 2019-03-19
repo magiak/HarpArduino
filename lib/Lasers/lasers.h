@@ -6,7 +6,7 @@
 
 // Hodnota je priblizne 30 pokud paprsek neni preruseny
 // Pokud je preruseny tak je priblizne 750
-const int LASER_MAX_NOT_INTERRUPTED = 300;
+const int LASER_MAX_NOT_INTERRUPTED = 350;
 
 const int LASER_A0 = A0;
 const int LASER_A1 = A1;
